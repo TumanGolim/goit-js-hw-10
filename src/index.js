@@ -50,14 +50,14 @@ breedSelect.addEventListener('change', async event => {
   catInfo.innerHTML = '';
 
   try {
-    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
-    const breeds = response.data;
+    const breeds = await fetchBreeds();
     const selectedBreed = breeds.find(breed => breed.id === breedId);
 
     if (selectedBreed) {
       const catData = await fetchCatByBreed(breedId);
       hideLoaderAndError();
-      displayCatData(catData);
+
+      displayCatData(catData, selectedBreed.name);
     }
   } catch (error) {
     hideLoaderAndError();
@@ -75,8 +75,7 @@ async function initApp() {
 
   showLoader();
   try {
-    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
-    const breeds = response.data;
+    const breeds = await fetchBreeds();
     hideLoaderAndError();
     populateBreedSelect(breeds);
   } catch (error) {
@@ -86,6 +85,15 @@ async function initApp() {
 }
 
 initApp();
+
+async function fetchBreeds() {
+  try {
+    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function fetchCatByBreed(breedId) {
   try {
@@ -107,7 +115,7 @@ async function fetchCatByBreed(breedId) {
   }
 }
 
-function displayCatData(catData) {
+function displayCatData(catData, breedName) {
   const catImage = document.createElement('img');
   catImage.src = catData.imageUrl;
   catImage.alt = catData.name;
@@ -117,6 +125,7 @@ function displayCatData(catData) {
     <h2>${catData.name}</h2>
     <p>${catData.description}</p>
     <p><strong>Temperament:</strong> ${catData.temperament}</p>
+    <p><strong>Breed:</strong> ${breedName}</p>
   `;
 
   catImage.classList.add('cat-image');
