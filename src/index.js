@@ -1,4 +1,4 @@
-import { fetchBreeds } from './cat-api';
+import axios from 'axios';
 
 const apiKey =
   'live_uNRLc0COBdNx17WnAGlMUQQ1O3sWv1wRyrDEdbOTLaWw1HoYnzFviM8nc7f87LBo';
@@ -50,7 +50,8 @@ breedSelect.addEventListener('change', async event => {
   catInfo.innerHTML = '';
 
   try {
-    const breeds = await fetchBreeds();
+    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
+    const breeds = response.data;
     const selectedBreed = breeds.find(breed => breed.id === breedId);
 
     if (selectedBreed) {
@@ -74,7 +75,8 @@ async function initApp() {
 
   showLoader();
   try {
-    const breeds = await fetchBreeds();
+    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
+    const breeds = response.data;
     hideLoaderAndError();
     populateBreedSelect(breeds);
   } catch (error) {
@@ -84,15 +86,6 @@ async function initApp() {
 }
 
 initApp();
-
-async function fetchBreeds() {
-  try {
-    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-}
 
 async function fetchCatByBreed(breedId) {
   try {
@@ -121,10 +114,10 @@ function displayCatData(catData) {
 
   const catText = document.createElement('div');
   catText.innerHTML = `
-  <h2>${catData.name}</h2>
-  <p>${catData.description}</p>
-  <p><strong>Temperament:</strong> ${catData.temperament}</p>
-`;
+    <h2>${catData.name}</h2>
+    <p>${catData.description}</p>
+    <p><strong>Temperament:</strong> ${catData.temperament}</p>
+  `;
 
   catImage.classList.add('cat-image');
   catText.classList.add('cat-text');
