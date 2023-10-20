@@ -1,10 +1,4 @@
-import axios from 'axios';
 import { fetchBreeds, fetchCatByBreed } from './cat-api.js';
-
-const apiKey =
-  'live_uNRLc0COBdNx17WnAGlMUQQ1O3sWv1wRyrDEdbOTLaWw1HoYnzFviM8nc7f87LBo';
-
-axios.defaults.headers.common['x-api-key'] = apiKey;
 
 const breedSelect = document.querySelector('.breed-select');
 const loader = document.querySelector('.loader');
@@ -32,18 +26,14 @@ window.addEventListener('online', () => {
 });
 
 window.addEventListener('offline', () => {
-  showError(
-    'Oops! You are currently offline. Please check your internet connection.'
-  );
+  showError('Oops! You are currently offline. Please check your internet connection.');
 });
 
 breedSelect.addEventListener('change', async event => {
   const breedId = event.target.value;
 
   if (!isOnline()) {
-    showError(
-      'Oops! You are currently offline. Please check your internet connection.'
-    );
+    showError('Oops! You are currently offline. Please check your internet connection.');
     return;
   }
 
@@ -57,25 +47,7 @@ breedSelect.addEventListener('change', async event => {
     if (selectedBreed) {
       const catData = await fetchCatByBreed(breedId);
       hideLoaderAndError();
-
-      if (catData.length > 0) {
-        const firstCat = catData[0];
-        const name = firstCat.breeds[0].name;
-        const description = firstCat.breeds[0].description;
-        const temperament = firstCat.breeds[0].temperament;
-        const imageUrl = firstCat.url;
-
-        const catInfo = {
-          name,
-          description,
-          temperament,
-          imageUrl,
-        };
-
-        displayCatData(catInfo);
-      } else {
-        showError('No cat data available for this breed.');
-      }
+      displayCatData(catData);
     }
   } catch (error) {
     hideLoaderAndError();
@@ -85,9 +57,7 @@ breedSelect.addEventListener('change', async event => {
 
 async function initApp() {
   if (!isOnline()) {
-    showError(
-      'Oops! You are currently offline. Please check your internet connection.'
-    );
+    showError('Oops! You are currently offline. Please check your internet connection.');
     return;
   }
 
