@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { fetchBreeds, fetchCatByBreed } from './cat-api.js';
 
 const apiKey =
   'live_uNRLc0COBdNx17WnAGlMUQQ1O3sWv1wRyrDEdbOTLaWw1HoYnzFviM8nc7f87LBo';
@@ -56,7 +57,25 @@ breedSelect.addEventListener('change', async event => {
     if (selectedBreed) {
       const catData = await fetchCatByBreed(breedId);
       hideLoaderAndError();
-      displayCatData(catData);
+
+      if (catData.length > 0) {
+        const firstCat = catData[0];
+        const name = firstCat.breeds[0].name;
+        const description = firstCat.breeds[0].description;
+        const temperament = firstCat.breeds[0].temperament;
+        const imageUrl = firstCat.url;
+
+        const catInfo = {
+          name,
+          description,
+          temperament,
+          imageUrl,
+        };
+
+        displayCatData(catInfo);
+      } else {
+        showError('No cat data available for this breed.');
+      }
     }
   } catch (error) {
     hideLoaderAndError();
@@ -85,35 +104,6 @@ async function initApp() {
 
 initApp();
 
-async function fetchBreeds() {
-  try {
-    const response = await axios.get('https://api.thecatapi.com/v1/breeds');
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function fetchCatByBreed(breedId) {
-  try {
-    const response = await axios.get(
-      `https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`
-    );
-    const catData = response.data[0];
-
-    if (catData && catData.breeds && catData.breeds[0]) {
-      return {
-        name: catData.breeds[0].name,
-        description: catData.breeds[0].description,
-        temperament: catData.breeds[0].temperament,
-        imageUrl: catData.url,
-      };
-    }
-  } catch (error) {
-    throw error;
-  }
-}
-
 function displayCatData(catData) {
   const catImage = document.createElement('img');
   catImage.src = catData.imageUrl;
@@ -121,10 +111,10 @@ function displayCatData(catData) {
 
   const catText = document.createElement('div');
   catText.innerHTML = `
-  <h2>${catData.name}</h2>
-  <p>${catData.description}</p>
-  <p><strong>Temperament:</strong> ${catData.temperament}</p>
-`;
+    <h2>${catData.name}</h2>
+    <p>${catData.description}</p>
+    <p><strong>Temperament:</strong> ${catData.temperament}</p>
+  `;
 
   catImage.classList.add('cat-image');
   catText.classList.add('cat-text');
