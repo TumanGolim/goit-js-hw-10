@@ -56,8 +56,7 @@ breedSelect.addEventListener('change', async event => {
     if (selectedBreed) {
       const catData = await fetchCatByBreed(breedId);
       hideLoaderAndError();
-
-      displayCatData(catData, selectedBreed.name);
+      displayCatData(catData);
     }
   } catch (error) {
     hideLoaderAndError();
@@ -115,18 +114,17 @@ async function fetchCatByBreed(breedId) {
   }
 }
 
-function displayCatData(catData, breedName) {
+function displayCatData(catData) {
   const catImage = document.createElement('img');
   catImage.src = catData.imageUrl;
   catImage.alt = catData.name;
 
   const catText = document.createElement('div');
   catText.innerHTML = `
-    <h2>${catData.name}</h2>
-    <p>${catData.description}</p>
-    <p><strong>Temperament:</strong> ${catData.temperament}</p>
-    <p><strong>Breed:</strong> ${breedName}</p>
-  `;
+  <h2>${catData.name}</h2>
+  <p>${catData.description}</p>
+  <p><strong>Temperament:</strong> ${catData.temperament}</p>
+`;
 
   catImage.classList.add('cat-image');
   catText.classList.add('cat-text');
